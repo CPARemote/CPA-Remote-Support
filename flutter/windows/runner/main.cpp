@@ -171,14 +171,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance, _In_opt_ HINSTANCE prev,
   // Fit the window to the monitor's work area.
   Win32Desktop::FitToWorkArea(origin, size);
 
-  std::wstring window_title;
-  if (is_cm_page) {
-    window_title = app_name + L" - Connection Manager";
-  } else if (is_install_page) {
-    window_title = app_name + L" - Install";
-  } else {
-    window_title = app_name;
-  }
+std::wstring window_title;
+if (is_cm_page) {
+    window_title = L"CPA Remote Support - Connection Manager";
+} else if (is_install_page) {
+    window_title = L"CPA Remote Support - Install";
+} else {
+    window_title = L"CPA Remote Support";
+}  
   if (!window.CreateAndShow(window_title, origin, size, !is_cm_page)) {
       return EXIT_FAILURE;
   }

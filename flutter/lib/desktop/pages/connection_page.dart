@@ -1,4 +1,4 @@
-// main window right pane
+﻿// main window right pane
 
 import 'dart:async';
 import 'dart:convert';
@@ -125,15 +125,11 @@ class _OnlineStatusWidgetState extends State<OnlineStatusWidget> {
                         : Color.fromARGB(255, 224, 79, 95)),
               ),
             ).marginSymmetric(horizontal: em),
-            Container(
-              width: isIncomingOnly ? 226 : null,
-              child: _buildConnStatusMsg(),
-            ),
             // stop
             if (!isIncomingOnly) startServiceWidget(),
             // ready && public
             // No need to show the guide if is custom client.
-            if (!isIncomingOnly) setupServerWidget(),
+            // Server setup suggestion hidden for CPA Remote Support.
           ],
         );
 
@@ -624,3 +620,4 @@ class _ConnectionPageState extends State<ConnectionPage>
         constraints: const BoxConstraints(maxWidth: 600), child: w);
   }
 }
+

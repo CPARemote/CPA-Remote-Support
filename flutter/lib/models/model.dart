@@ -288,7 +288,7 @@ class FfiModel with ChangeNotifier {
       final icon =
           '${secure == true ? 'secure' : 'insecure'}${direct == true ? '' : '_relay'}';
       final iconWidget =
-          SvgPicture.asset('assets/$icon.svg', width: 48, height: 48);
+         Image.asset('assets/CPA_Remote.png', width: 48, height: 48);
       String connectionText =
           getConnectionText(secure!, direct!, cachedPeerData.streamType);
       return Column(

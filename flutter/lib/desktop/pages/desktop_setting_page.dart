@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -75,11 +75,7 @@ class DesktopSettingPage extends StatefulWidget {
         bind.mainGetBuildinOption(key: kOptionHideNetworkSetting) != 'Y')
       SettingsTabKey.network,
     if (!bind.isIncomingOnly()) SettingsTabKey.display,
-    if (!bind.isDisableAccount()) SettingsTabKey.account,
-    if (isWindows &&
-        !bind.isDisableSettings() &&
-        bind.mainGetBuildinOption(key: kOptionHideRemotePrinterSetting) != 'Y')
-      SettingsTabKey.printer,
+    // Account tab hidden for CPA Remote Support.
     SettingsTabKey.about,
   ];
 
@@ -432,7 +428,7 @@ class _GeneralState extends State<_General> {
     // The bindings JSON (LocalConfig key `keyboard-shortcuts`) holds three
     // flags + the bindings list: {enabled, pass_through, bindings}. When the
     // master is off, the pass-through toggle and the Configure entry are
-    // hidden — both are meaningless without an active matcher.
+    // hidden â€” both are meaningless without an active matcher.
     return StatefulBuilder(builder: (context, setLocalState) {
       final enabled = ShortcutModel.isEnabled();
       return _Card(title: 'Keyboard shortcuts', children: [
@@ -525,7 +521,10 @@ class _GeneralState extends State<_General> {
     final incomingOnly = bind.isIncomingOnly();
     final outgoingOnly = bind.isOutgoingOnly();
     final showAutoUpdate = (isWindows && bind.mainIsInstalled()) ||
-    (isMacOS && bind.mainIsInstalled() && bind.mainIsInstalledDaemon(prompt: false) && !bind.isCustomClient());
+        (isMacOS &&
+            bind.mainIsInstalled() &&
+            bind.mainIsInstalledDaemon(prompt: false) &&
+            !bind.isCustomClient());
     final children = <Widget>[
       if (!isWeb && !incomingOnly)
         _OptionCheckBox(context, 'Confirm before closing multiple tabs',
@@ -927,14 +926,14 @@ class _GeneralState extends State<_General> {
   // How long an already-connected relay is held back to give the direct WebRTC
   // attempt a chance to win. It only means anything while WebRTC is on, so it
   // follows the checkbox as an indented sub-option and is hidden outright when
-  // the box is clear — the shape `directIp` uses for its port.
+  // the box is clear â€” the shape `directIp` uses for its port.
   List<Widget> webrtcOptions(BuildContext context) {
     final stored = bind.mainGetLocalOption(key: kOptionRelayFallbackDelay);
     final controller = TextEditingController(text: stored);
     // What the field holds against what is saved. Apply is offered only while
     // the two differ, so an untouched field shows no button at all, and neither
     // does one typed back to its saved value or cleared when nothing was saved
-    // — the state an "edited" flag alone would still call dirty.
+    // â€” the state an "edited" flag alone would still call dirty.
     final typed = RxString(stored);
     final saved = RxString(stored);
     return [
@@ -2574,10 +2573,24 @@ class _AboutState extends State<_About> {
       final scrollController = ScrollController();
       return SingleChildScrollView(
         controller: scrollController,
-        child: _Card(title: translate('About RustDesk'), children: [
+        child: _Card(title: 'About CPA Remote Support', children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const Text(
+                'CPA Remote Support',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF27366B),
+                ),
+              ),
+              const SizedBox(height: 6),
+              const Text(
+                'Industrial Remote Access | LAN / VPN Connectivity',
+                style: TextStyle(fontSize: 13),
+              ),
+              const SizedBox(height: 16),
               const SizedBox(
                 height: 8.0,
               ),
@@ -2595,48 +2608,94 @@ class _AboutState extends State<_About> {
                   child: Text('${translate('ID')}: $myId')
                       .marginSymmetric(vertical: 4.0)),
               InkWell(
-                  onTap: () {
-                    launchUrlString('https://rustdesk.com/privacy.html');
-                  },
-                  child: Text(
-                    translate('Privacy Statement'),
-                    style: linkStyle,
-                  ).marginSymmetric(vertical: 4.0)),
+                onTap: () => launchUrlString('https://cpaltd.net'),
+                child: const Text('Website: cpaltd.net', style: linkStyle)
+                    .marginSymmetric(vertical: 4.0),
+              ),
               InkWell(
-                  onTap: () {
-                    launchUrlString('https://rustdesk.com');
-                  },
-                  child: Text(
-                    translate('Website'),
-                    style: linkStyle,
-                  ).marginSymmetric(vertical: 4.0)),
-              Container(
-                decoration: const BoxDecoration(color: Color(0xFF2c8cff)),
-                padding:
-                    const EdgeInsets.symmetric(vertical: 24, horizontal: 8),
-                child: SelectionArea(
-                    child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Copyright © ${DateTime.now().toString().substring(0, 4)} Purslane Tech Pte. Ltd.\n$license',
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                          Text(
-                            translate('Slogan_tip'),
-                            style: TextStyle(
-                                fontWeight: FontWeight.w800,
-                                color: Colors.white),
-                          )
-                        ],
+                onTap: () => showDialog<void>(
+                  context: context,
+                  builder: (dialogContext) => AlertDialog(
+                    title: const Text('Legal & Privacy Information'),
+                    content: SizedBox(
+                      width: 520,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text('Copyright & Open-Source Licence',
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Copyright Â© ${DateTime.now().year} Purslane Tech Pte. Ltd.\n$license',
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'CPA Remote Support is a modified version of the open-source RustDesk project. '
+                              'The original copyright notices and applicable open-source licence terms remain in effect. '
+                              'Recipients retain the rights granted by those licences.',
+                            ),
+                            const SizedBox(height: 8),
+                            TextButton(
+                              onPressed: () => launchUrlString(
+                                  'https://www.gnu.org/licenses/agpl-3.0.html'),
+                              child: const Text('Read AGPL-3.0 licence'),
+                            ),
+                            TextButton(
+                              onPressed: () => launchUrlString(
+                                  'https://github.com/rustdesk/rustdesk'),
+                              child:
+                                  const Text('Original RustDesk source code'),
+                            ),
+                            TextButton(
+                              onPressed: () => launchUrlString(
+                                  'https://github.com/CPARemote/CPA-Remote-Support'),
+                              child: const Text(
+                                  'CPA Remote Support - Modified Source Code'),
+                            ),
+                            const Text(
+                              'The corresponding source code for CPA modifications '
+                              'must also be made available as required by the applicable licence.',
+                            ),
+                            const Divider(height: 24),
+                            const Text('Privacy Statement',
+                                style: TextStyle(fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'The following link opens the original RustDesk privacy statement. '
+                              'It is not a CPA privacy notice.',
+                            ),
+                            TextButton(
+                              onPressed: () => launchUrlString(
+                                  'https://rustdesk.com/privacy.html'),
+                              child: const Text('RustDesk Privacy Statement'),
+                            ),
+                            const Text(
+                              'CPA should provide its own privacy notice if it '
+                              'collects or processes customer personal data.',
+                            ),
+                          ],
+                        ),
                       ),
                     ),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(dialogContext).pop(),
+                        child: const Text('Close'),
+                      ),
+                    ],
+                  ),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.info_outline, size: 18),
+                    SizedBox(width: 6),
+                    Text('Legal & Privacy Information', style: linkStyle),
                   ],
-                )),
-              ).marginSymmetric(vertical: 4.0)
+                ).marginSymmetric(vertical: 8.0),
+              ),
             ],
           ).marginOnly(left: _kContentHMargin)
         ]),
@@ -3374,3 +3433,4 @@ void changeSocks5Proxy() async {
 }
 
 //#endregion
+

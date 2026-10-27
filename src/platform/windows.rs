@@ -1,4 +1,4 @@
-use super::{validate_install_app_name, CursorData, ResultType};
+﻿use super::{validate_install_app_name, CursorData, ResultType};
 use crate::{
     common::PORTABLE_APPNAME_RUNTIME_ENV_KEY,
     custom_server::*,
@@ -1852,7 +1852,7 @@ fn get_before_uninstall(kill_self: bool) -> ResultType<String> {
     chcp 65001
     {remove_service}
     taskkill /F /IM {broker_exe}
-    taskkill /F /IM {app_name}.exe{filter}
+    taskkill /F /IM \"{app_name}.exe\"{filter}
     reg delete HKEY_CLASSES_ROOT\\.{ext} /f
     reg delete HKEY_CLASSES_ROOT\\{ext} /f
     netsh advfirewall firewall delete rule name=\"{app_name} Service\"
@@ -3354,7 +3354,7 @@ pub fn uninstall_service(show_new_window: bool, _: bool) -> bool {
     {remove_service}
     if exist \"%PROGRAMDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\{app_name} Tray.lnk\" del /f /q \"%PROGRAMDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\{app_name} Tray.lnk\"
     taskkill /F /IM {broker_exe}
-    taskkill /F /IM {app_name}.exe{filter}
+    taskkill /F /IM \"{app_name}.exe\"{filter}
     ",
         app_name = crate::get_app_name(),
         broker_exe = WIN_TOPMOST_INJECTED_PROCESS_EXE,
@@ -3389,7 +3389,7 @@ fn get_install_service_commands(path: &str, exe: &str) -> ResultType<InstallComm
     let script = format!(
         "
 chcp 65001
-taskkill /F /IM {app_name}.exe{filter}
+taskkill /F /IM \"{app_name}.exe\"{filter}
 {tray_shortcut_commands}
 copy /Y \"%RUSTDESK_OUTPUT_DIR%\\{app_name} Tray.lnk\" \"%PROGRAMDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\\"
 {import_config}
@@ -3583,7 +3583,7 @@ reg add {subkey} /f /v EstimatedSize /t REG_DWORD /d {size}
 
     let filter = format!(" /FI \"PID ne {}\"", get_current_pid());
     let restore_service_cmd = if is_service_running {
-        format!("sc start {}", &app_name)
+        format!("sc start \"{}\"", &app_name)
     } else {
         "".to_owned()
     };
@@ -3615,8 +3615,8 @@ reg add {subkey} /f /v EstimatedSize /t REG_DWORD /d {size}
     let cmds = format!(
         "
 chcp 65001
-sc stop {app_name}
-taskkill /F /IM {app_name}.exe{filter}
+sc stop \"{app_name}\"
+taskkill /F /IM \"{app_name}.exe\"{filter}
 {reg_cmd}
 {copy_exe}
 {rename_exe}
@@ -3997,7 +3997,7 @@ fn service_control_command(operation: &str, exe: &str, installed_now: bool) -> R
     let is_create = matches!(operation, "create-service" | "create-service-with-rollback");
     let legacy = match operation {
         "create-service" | "create-service-with-rollback" => get_create_service(exe),
-        "remove" => format!("sc stop {app_name}\r\nsc delete {app_name}"),
+        "remove" => format!("sc stop \"{app_name}\"\r\nsc delete \"{app_name}\""),
         _ => bail!("Unsupported service operation: {operation}"),
     };
     if legacy.is_empty() || (is_create && Config::get_option("stop-service") == "Y") {
@@ -4039,12 +4039,12 @@ fn get_import_config(exe: &str) -> String {
     let config_path = Config::file();
     let config_path = escape_nested_cmd_ampersands(config_path.to_str().unwrap_or(""));
     format!("
-sc stop {app_name}
-sc delete {app_name}
-sc create {app_name} binpath= \"\\\"{exe}\\\" --import-config \\\"{config_path}\\\"\" start= auto DisplayName= \"{app_name} Service\"
-sc start {app_name}
-sc stop {app_name}
-sc delete {app_name}
+sc stop \"{app_name}\"
+sc delete \"{app_name}\"
+sc create \"{app_name}\" binpath= \"\\\"{exe}\\\" --import-config \\\"{config_path}\\\"\" start= auto DisplayName= \"{app_name} Service\"
+sc start \"{app_name}\"
+sc stop \"{app_name}\"
+sc delete \"{app_name}\"
 ",
     app_name = crate::get_app_name(),
 )
@@ -4062,8 +4062,8 @@ if exist \"%PROGRAMDATA%\\Microsoft\\Windows\\Start Menu\\Programs\\Startup\\{ap
     } else {
         let exe = escape_nested_cmd_ampersands(exe);
         format!("
-sc create {app_name} binpath= \"\\\"{exe}\\\" --service\" start= auto DisplayName= \"{app_name} Service\"
-sc start {app_name}
+sc create \"{app_name}\" binpath= \"\\\"{exe}\\\" --service\" start= auto DisplayName= \"{app_name} Service\"
+sc start \"{app_name}\"
 ",
     app_name = crate::get_app_name())
     }
