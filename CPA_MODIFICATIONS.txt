@@ -1,0 +1,24 @@
+CPA Remote Support
+Modification Record
+Date: 26 October 2026
+
+Original project: RustDesk
+Original source: https://github.com/rustdesk/rustdesk
+Base Git revision: 59f2953c9
+Licence: GNU Affero General Public License Version 3
+
+CPA Modifications:
+1. Changed application branding to CPA Remote Support.
+2. Added CPA logo and Windows application icon.
+3. Changed the Windows application title.
+4. Customised the main application home page.
+5. Customised the About page.
+6. Changed the website link to https://cpaltd.net.
+7. Added a Legal & Privacy Information pop-up.
+8. Retained access to original copyright and licence information.
+
+This application is based on the open-source RustDesk project.
+Original copyright notices and applicable licence terms remain in effect.
+
+Corresponding source code must be made available as required
+by the applicable AGPL-3.0 licence.

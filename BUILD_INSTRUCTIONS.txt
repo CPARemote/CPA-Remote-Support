@@ -1,0 +1,88 @@
+CPA REMOTE SUPPORT
+WINDOWS BUILD INSTRUCTIONS
+Date: 26 October 2026
+
+Original Project:
+https://github.com/rustdesk/rustdesk
+
+Base Git Revision:
+59f2953c9
+
+Licence:
+GNU Affero General Public License Version 3 (AGPL-3.0)
+
+BUILD ENVIRONMENT
+Operating System: Windows
+Flutter SDK: C:\flutter
+LLVM: C:\Program Files\LLVM
+vcpkg: C:\vcpkg
+Target: Windows x64 Release
+
+BUILD PROCEDURE
+
+1. Install the required RustDesk build dependencies,
+   including Flutter, Rust, Visual Studio C++ tools,
+   LLVM and vcpkg.
+
+2. Open Windows PowerShell.
+
+3. Navigate to the source-code directory.
+
+4. Run the following commands:
+
+$env:PATH = "C:\flutter\bin;C:\Program Files\LLVM\bin;$env:PATH"
+$env:VCPKG_ROOT = "C:\vcpkg"
+$env:VCPKG_DEFAULT_TRIPLET = "x64-windows-static"
+
+cd flutter
+
+flutter pub get
+
+flutter build windows --release
+
+5. The Windows executable should be generated at:
+
+flutter\build\windows\x64\runner\Release\rustdesk.exe
+
+NOTES
+
+This source package includes modifications made for
+CPA Remote Support.
+
+The original RustDesk licence and applicable copyright
+notices remain in effect.
+
+These instructions describe the local build environment.
+Additional dependencies and setup may be required to
+reproduce the build on another computer.
+
+NATIVE RUST LIBRARY BUILD
+
+Before building the Flutter Windows application:
+
+1. Open PowerShell in the CPA Remote Support source directory.
+
+2. Configure the build environment:
+
+$env:PATH = "C:\flutter\bin;C:\Program Files\LLVM\bin;$env:PATH"
+$env:VCPKG_ROOT = "C:\vcpkg"
+$env:VCPKG_DEFAULT_TRIPLET = "x64-windows-static"
+
+3. Build the native Rust library:
+
+cargo build --locked --features flutter --lib --release
+
+4. Confirm the output exists:
+
+target\release\librustdesk.dll
+
+5. Build the Flutter Windows application:
+
+cd flutter
+flutter pub get
+flutter build windows --release
+
+Note: The required toolchains, dependencies and generated
+Flutter-Rust bridge files must be configured correctly.
+These steps still require verification using an independent
+source-code build.
