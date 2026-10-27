@@ -76,10 +76,6 @@ class DesktopSettingPage extends StatefulWidget {
       SettingsTabKey.network,
     if (!bind.isIncomingOnly()) SettingsTabKey.display,
     if (!bind.isDisableAccount()) SettingsTabKey.account,
-    if (isWindows &&
-        !bind.isDisableSettings() &&
-        bind.mainGetBuildinOption(key: kOptionHideRemotePrinterSetting) != 'Y')
-      SettingsTabKey.printer,
     SettingsTabKey.about,
   ];
 
@@ -525,7 +521,10 @@ class _GeneralState extends State<_General> {
     final incomingOnly = bind.isIncomingOnly();
     final outgoingOnly = bind.isOutgoingOnly();
     final showAutoUpdate = (isWindows && bind.mainIsInstalled()) ||
-    (isMacOS && bind.mainIsInstalled() && bind.mainIsInstalledDaemon(prompt: false) && !bind.isCustomClient());
+        (isMacOS &&
+            bind.mainIsInstalled() &&
+            bind.mainIsInstalledDaemon(prompt: false) &&
+            !bind.isCustomClient());
     final children = <Widget>[
       if (!isWeb && !incomingOnly)
         _OptionCheckBox(context, 'Confirm before closing multiple tabs',
@@ -2578,20 +2577,20 @@ class _AboutState extends State<_About> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-const Text(
-  'CPA Remote Support',
-  style: TextStyle(
-    fontSize: 22,
-    fontWeight: FontWeight.bold,
-    color: Color(0xFF27366B),
-  ),
-),
-const SizedBox(height: 6),
-const Text(
-  'Industrial Remote Access | LAN / VPN Connectivity',
-  style: TextStyle(fontSize: 13),
-),
-const SizedBox(height: 16),
+              const Text(
+                'CPA Remote Support',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF27366B),
+                ),
+              ),
+              const SizedBox(height: 6),
+              const Text(
+                'Industrial Remote Access | LAN / VPN Connectivity',
+                style: TextStyle(fontSize: 13),
+              ),
+              const SizedBox(height: 16),
               const SizedBox(
                 height: 8.0,
               ),
@@ -2646,7 +2645,14 @@ const SizedBox(height: 16),
                             TextButton(
                               onPressed: () => launchUrlString(
                                   'https://github.com/rustdesk/rustdesk'),
-                              child: const Text('Original RustDesk source code'),
+                              child:
+                                  const Text('Original RustDesk source code'),
+                            ),
+                            TextButton(
+                              onPressed: () => launchUrlString(
+                                  'https://github.com/CPARemote/CPA-Remote-Support'),
+                              child: const Text(
+                                  'CPA Remote Support - Modified Source Code'),
                             ),
                             const Text(
                               'The corresponding source code for CPA modifications '
